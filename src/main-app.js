@@ -4,7 +4,7 @@
     history: [],
   };
   const reducer = (state, action) => {
-    switch(action.type) {
+    switch (action.type) {
       case 'UPDATE_MESSAGE':
         return Object.assign({}, state, {
           message: action.message,
@@ -13,25 +13,23 @@
               message: state.message,
               date: action.date,
             },
-            ...state.history
+            ...state.history,
           ],
         });
-      break;
       case 'CLEAR_MESSAGE':
         return Object.assign({}, state, {
           message: '',
         });
-      break;
       default:
         return state;
     }
   };
   const store = Redux.createStore(
     reducer,
-    initial,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && // Enable Redux devtools
-      window.__REDUX_DEVTOOLS_EXTENSION__()
-    );
+    initial, /* eslint-disable no-underscore-dangle */
+    window.__REDUX_DEVTOOLS_EXTENSION__ && /* eslint-disable no-underscore-dangle */
+      window.__REDUX_DEVTOOLS_EXTENSION__(),
+  );
   const ReduxMixin = PolymerRedux(store);
 
   class MainApp extends ReduxMixin(Polymer.Element) {
