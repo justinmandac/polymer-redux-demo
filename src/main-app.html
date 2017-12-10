@@ -1,0 +1,26 @@
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../bower_components/polymer-redux/polymer-redux.html">
+<script src="../node_modules/redux/dist/redux.js"></script>
+
+<dom-module id="main-app">
+  <template>
+    <h1>Polymer Redux Demo</h1>
+    <div id="messageContainer" class="message-container">
+      [[message]]
+    </div>
+    <paper-input id="messageInput" label="Enter message"></paper-input>
+    <paper-button on-click="_updatePressed">Update!</paper-button>
+    <paper-button on-click="_clearPressed">Clear</paper-button>
+
+    <h4>History</h4>
+    <template is="dom-repeat" items="[[history]]">
+      <div>
+        > [[item.message]] - [[item.date]]
+      </div>
+    </template>
+  </template>
+  <script src="main-app.js"></script>
+</dom-module>
