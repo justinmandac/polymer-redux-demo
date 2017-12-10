@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer-redux/polymer-redux.html">
+<script src="../../node_modules/redux/dist/redux.js"></script>
+
+<script>
+  (() => {
+    const SET_START_DATE = 'SET_START_DATE';
+    const SET_END_DATE = 'SET_END_DATE';
+    const SET_DATES = 'SET_DATES';
+    const initialState = {
+      startDate: null,
+      endDate: null,
+    };
+
+    const dateReducer = (state = initialState, action) => {
+      switch (action.type) {
+        case SET_START_DATE:
+          return {
+            ...state,
+            startDate: action.payload,
+          };
+        case SET_END_DATE:
+          return {
+            ...state,
+            endDate: action.payload,
+          };
+        case SET_DATES:
+          return {
+            ...state,
+            endDate: action.payload.endDate,
+            startDate: action.payload.startDate,
+          };
+        default:
+          return state;
+      }
+    };
+
+    const store = Redux.createStore(
+      dateReducer,
+      /* eslint-disable no-underscore-dangle */
+      window.__REDUX_DEVTOOLS_EXTENSION__ &&
+      /* eslint-disable no-underscore-dangle */
+      window.__REDUX_DEVTOOLS_EXTENSION__(),
+    );
+    /** @polymerMixin */
+    const ReduxMixin = PolymerRedux(store);
+
+    window.EarthquakeApp = window.EarthquakeApp || {};
+    window.EarthquakeApp.ReduxMixin = ReduxMixin;
+    window.EarthquakeApp.actionTypes = {
+      ...window.EarthquakeApp.actionTypes,
+      SET_END_DATE,
+      SET_START_DATE,
+      SET_DATES,
+    } || {};
+  })();
+</script>

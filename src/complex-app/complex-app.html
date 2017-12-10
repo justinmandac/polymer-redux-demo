@@ -1,10 +1,88 @@
+<link rel="import" href="../../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-styles/default-theme.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-
+<link rel="import" href="redux-mixin.html">
 <dom-module id="complex-app">
   <template>
-    <style include="default-theme typography"></style>
+    <style>
+      :host {
+        @apply(--paper-font-common-base)
+      }
+
+      app-toolbar {
+        color: var(--dark-theme-base-color);
+        background-color: var(--dark-theme-background-color)
+      }
+
+      .primary-btn {
+        color: var(--dark-theme-base-color);
+        background-color: var(--primary-color);
+      }
+
+    </style>
+    <app-drawer-layout>
+      <app-drawer slot="drawer">
+        <app-toolbar>
+          <div main-title>
+            Earthquake App
+          </div>
+        </app-toolbar>
+        <paper-input id="startDate" label="Start Date" value="[[startDate]]"></paper-input>
+        <paper-input id="endDate" label="End Date" value="[[endDate]]"></paper-input>
+        <paper-button class="primary-btn" on-tap="_setDates">Update</paper-button>
+      </app-drawer>
+      <app-header-layout>
+        <app-header slot="header">
+          <app-toolbar>
+            <div main-title>
+              Header
+            </div>
+          </app-toolbar>
+        </app-header>
+
+        <!-- Content -->
+      </app-header-layout>
+    </app-drawer-layout>
   </template>
-  <script src="complex-app.js"></script>
+  <script>
+  (() => {
+    /** @polymerMixin */
+    const Element = window.EarthquakeApp.ReduxMixin(Polymer.Element);
+
+    class ComplexApp extends Element {
+      static get is() { return 'complex-app'; }
+      static get properties() {
+        return {
+          endDate: {
+            type: String,
+            statePath: 'endDate',
+          },
+          startDate: {
+            type: String,
+            statePath: 'startDate',
+          },
+        };
+      }
+
+      _setDates() {
+        const {
+          SET_DATES,
+        } = window.EarthquakeApp.actionTypes;
+
+        this.dispatch({
+          type: SET_DATES,
+          payload: {
+            startDate: this.$.startDate.value,
+            endDate: this.$.endDate.value,
+          },
+        });
+      }
+    }
+
+    customElements.define(ComplexApp.is, ComplexApp);
+  })();
+  </script>
 </dom-module>
