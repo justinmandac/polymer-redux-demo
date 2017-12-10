@@ -6,8 +6,8 @@
     const SET_START_DATE = 'SET_START_DATE';
     const SET_END_DATE = 'SET_END_DATE';
     const SET_DATES = 'SET_DATES';
-    const SET_ROUTE = 'SET_ROUTE';
-    const dateReducer = (state = {
+    const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE';
+    const date = (state = {
       startDate: null,
       endDate: null,
     }, action) => {
@@ -32,14 +32,14 @@
           return state;
       }
     };
-    const routeReducer = (state = {
-      route: {},
+    const page = (state = {
+      currentPage: '',
     }, action) => {
       switch (action.type) {
-        case SET_ROUTE:
+        case SET_CURRENT_PAGE:
           return {
             ...state,
-            route: action.payload,
+            currentPage: action.payload,
           };
         default:
           return state;
@@ -48,8 +48,8 @@
 
     const store = Redux.createStore(
       Redux.combineReducers({
-        date: dateReducer,
-        route: routeReducer,
+        date,
+        page,
       }),
       /* eslint-disable no-underscore-dangle */
       window.__REDUX_DEVTOOLS_EXTENSION__ &&
@@ -66,7 +66,7 @@
       SET_END_DATE,
       SET_START_DATE,
       SET_DATES,
-      SET_ROUTE,
+      SET_CURRENT_PAGE,
     } || {};
   })();
 </script>

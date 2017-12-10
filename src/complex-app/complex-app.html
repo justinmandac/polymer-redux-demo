@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-styles/default-theme.html">
@@ -24,10 +26,16 @@
       }
 
     </style>
-    <app-location route="{{_route}}" use-hash-as-path on-path-changed="_onRouteChanged">
+    <app-location route="{{route}}" use-hash-as-path>
     </app-location>
+    <app-route id="pageRoute"
+      route="{{route}}"
+      pattern="/:page"
+      data="{{pageRouteData}}"
+      on-data-changed="_onPageRouteDataChanged">
+    </app-route>
 
-    <app-drawer-layout>
+    <app-drawer-layout fullbleed>
       <app-drawer slot="drawer">
         <app-toolbar>
           <div main-title>
@@ -48,6 +56,11 @@
         </app-header>
 
         <!-- Content -->
+        <iron-pages attr-for-selected="data-name" selected="[[currentPage]]">
+          <div data-name="foo">Foo</div>
+          <div data-name="bar">Bar</div>
+          <div data-name="baz">Baz</div>
+        </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
   </template>
@@ -60,34 +73,39 @@
       static get is() { return 'complex-app'; }
       static get properties() {
         return {
-          route: {
-            type: Object,
-            basePath: 'route',
+          currentPage: {
+            type: String,
+            statePath: 'page.currentPage',
           },
           endDate: {
             type: String,
-            statePath: 'endDate',
+            statePath: 'date.endDate',
+          },
+          pageRouteData: {
+            type: Object,
+            value: () => ({}),
+          },
+          route: {
+            type: Object,
           },
           startDate: {
             type: String,
-            statePath: 'startDate',
-          },
-          /** Bind this to app-location.route so we can set route via redux. */
-          _route: {
-            type: Object,
-            value: () => ({}),
+            statePath: 'date.startDate',
           },
         };
       }
 
-      _onRouteChanged() {
+      _onPageRouteDataChanged(evt) {
         const {
-          SET_ROUTE,
+          page,
+        } = evt.detail.value;
+        const {
+          SET_CURRENT_PAGE,
         } = window.EarthquakeApp.actionTypes;
+
         this.dispatch({
-          type: SET_ROUTE,
-          /* eslint-disable no-underscore-dangle */
-          payload: this._route,
+          type: SET_CURRENT_PAGE,
+          payload: page,
         });
       }
 
