@@ -7,6 +7,8 @@
     const SET_END_DATE = 'SET_END_DATE';
     const SET_DATES = 'SET_DATES';
     const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE';
+    const FETCHING_EVENTS = 'FETCHING_EVENTS';
+    const EVENTS_RETRIEVED = 'EVENTS_RETRIEVED';
     const date = (state = {
       startDate: null,
       endDate: null,
@@ -45,11 +47,32 @@
           return state;
       }
     };
+    const events = (state = {
+      list: [],
+      loading: false,
+    }, action) => {
+      switch (action.type) {
+        case FETCHING_EVENTS:
+          return {
+            ...state,
+            loading: true,
+          };
+        case EVENTS_RETRIEVED:
+          return {
+            ...state,
+            loading: false,
+            list: action.payload,
+          };
+        default:
+          return state;
+      }
+    };
 
     const store = Redux.createStore(
       Redux.combineReducers({
         date,
         page,
+        events,
       }),
       /* eslint-disable no-underscore-dangle */
       window.__REDUX_DEVTOOLS_EXTENSION__ &&
@@ -67,6 +90,8 @@
       SET_START_DATE,
       SET_DATES,
       SET_CURRENT_PAGE,
+      FETCHING_EVENTS,
+      EVENTS_RETRIEVED,
     } || {};
   })();
 </script>

@@ -6,8 +6,11 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-styles/default-theme.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="redux-mixin.html">
+<script src="api.js"></script>
 <dom-module id="complex-app">
   <template>
     <style>
@@ -39,25 +42,32 @@
       <app-drawer slot="drawer">
         <app-toolbar>
           <div main-title>
-            Earthquake App
+            Earthquake Monitor
           </div>
         </app-toolbar>
-        <paper-input id="startDate" label="Start Date" value="[[startDate]]"></paper-input>
-        <paper-input id="endDate" label="End Date" value="[[endDate]]"></paper-input>
+        <paper-input id="startDate" label="Start Date" type="date" value="[[startDate]]"></paper-input>
+        <paper-input id="endDate" label="End Date" type="date" value="[[endDate]]"></paper-input>
         <paper-button class="primary-btn" on-tap="_setDates">Update</paper-button>
       </app-drawer>
       <app-header-layout>
         <app-header slot="header">
-          <app-toolbar>
-            <div main-title>
-              Header
-            </div>
-          </app-toolbar>
+          <app-toolbar></app-toolbar>
         </app-header>
 
         <!-- Content -->
         <iron-pages attr-for-selected="data-name" selected="[[currentPage]]">
-          <div data-name="foo">Foo</div>
+          <div data-name="">
+            <template is="dom-if" if="[[loading]]">
+              Loading
+            </template>
+            <template is="dom-if" if="[[!loading]]">
+              <ul>
+                <template is="dom-repeat" items="[[events]]">
+                  <li>[[item.properties.place]]</li>
+                </template>
+              </ul>
+            </template>
+          </div>
           <div data-name="bar">Bar</div>
           <div data-name="baz">Baz</div>
         </iron-pages>
@@ -66,6 +76,8 @@
   </template>
   <script>
   (() => {
+    const PH_CENTER_LONG = 121.7740;
+    const PH_CENTER_LAT = 12.8797;
     /** @polymerMixin */
     const Element = window.EarthquakeApp.ReduxMixin(Polymer.Element);
 
@@ -81,6 +93,14 @@
             type: String,
             statePath: 'date.endDate',
           },
+          events: {
+            type: Array,
+            statePath: 'events.list',
+          },
+          loading: {
+            type: Boolean,
+            statePath: 'events.loading',
+          },
           pageRouteData: {
             type: Object,
             value: () => ({}),
@@ -94,7 +114,6 @@
           },
         };
       }
-
       _onPageRouteDataChanged(evt) {
         const {
           page,
@@ -112,14 +131,35 @@
       _setDates() {
         const {
           SET_DATES,
+          FETCHING_EVENTS,
+          EVENTS_RETRIEVED,
         } = window.EarthquakeApp.actionTypes;
+        const startDate = this.$.startDate.value;
+        const endDate = this.$.endDate.value;
 
         this.dispatch({
           type: SET_DATES,
           payload: {
-            startDate: this.$.startDate.value,
-            endDate: this.$.endDate.value,
+            startDate,
+            endDate,
           },
+        });
+
+        this.dispatch({
+          type: FETCHING_EVENTS,
+        });
+
+        window.EarthquakeApp.api(
+          PH_CENTER_LAT,
+          PH_CENTER_LONG,
+          startDate,
+          endDate,
+          942,
+        ).then((res) => {
+          this.dispatch({
+            type: EVENTS_RETRIEVED,
+            payload: res.features,
+          });
         });
       }
     }
